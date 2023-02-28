@@ -11,10 +11,20 @@ spec:
   nodeSelector:
     nodeSelectorTerms:
     - matchExpressions:
-      - key: ''
+      - key: 'kubernetes.io/hostname'
         operator: In
         values:
-        - edge-node1          #pls give your edge node name
+        - jetson-edge          #pls give your edge node name
+  protocol:
+    bluetooth:
+      macAddress: "8C:CE:4E:83:25:52"
+  propertyVisitors:
+  - propertyName: "power-status"
+    bluetooth:
+      characteristicUUID: ff01
+      dataWrite:
+        "ON": "0x01"   #Here "ON" refers to the value of the property "temperature-enable" and [1] refers to the corresponding []byte value to be written into the device when the value of temperature-enable is "ON"
+        "OFF": "0x00"
 status:
   twins:
     - propertyName: power-status
