@@ -26,7 +26,7 @@
 #define GAS_SMOKE 2
 
 /**********************************************function-define-----------------------------*/
-float *read(bool print);
+float *mq2_read(bool print);
 
 float readLPG();
 float readCO();

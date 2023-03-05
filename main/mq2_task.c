@@ -34,7 +34,7 @@ static const adc_bits_width_t width = ADC_WIDTH_BIT_10;
 /* No input attenumation, ADC can measure up to approx. 800 mV. */
 static const adc_atten_t atten = ADC_ATTEN_DB_0;
 
-static esp_adc_cal_characteristics_t *adc_chars;
+static esp_adc_cal_characteristics_t adc_chars;
 
 /*****************************Globals***********************************************/
 float LPGCurve[3] = {2.3, 0.21, -0.47};   // two points are taken from the curve.
@@ -130,15 +130,16 @@ float MQResistanceCalculation(int raw_adc)
 }
 
 /****************** read infinite times ****************************************/
-float *read(bool print)
+float *mq2_read(bool print)
 {
+    ESP_LOGI(DEBUG_TAG, "program into read function");
     float lpg_value, co_value, smoke_value;
     lpg_value = MQRead();
-    lpg = MQGetGasPercentage(lpg_value / R0, GAS_LPG);
+    lpg = MQGetGasPercentage(lpg_value / Ro, GAS_LPG);
     co_value = MQRead();
-    co = MQGetGasPercentage(co_value / R0, GAS_CO);
+    co = MQGetGasPercentage(co_value / Ro, GAS_CO);
     smoke_value = MQRead();
-    smoke = MQGetGasPercentage(smoke_value / R0, GAS_SMOKE);
+    smoke = MQGetGasPercentage(smoke_value / Ro, GAS_SMOKE);
 
     if (lpg > 1000 || co > 1000 || smoke > 1000)
     {
@@ -171,7 +172,7 @@ float MQRead()
 
     int val = adc1_get_raw(channel);
     ESP_LOGI(DEBUG_TAG, "MQ2 ADC: %d", val);
-    uint32_t voltage = esp_adc_cal_raw_to_voltage(val, adc_chars);
+    uint32_t voltage = esp_adc_cal_raw_to_voltage(val, &adc_chars);
     ESP_LOGI(DEBUG_TAG, "MQ2 Voltage: %d", voltage);
 
     for (i = 0; i < READ_SAMPLE_TIMES; i++)
@@ -307,7 +308,7 @@ void mq2_task_handler(void *arg)
     {
         // update the lpg, co, smoke values
         ESP_LOGI(DEBUG_TAG, "update the lpg, co, smoke values");
-        read(true);
+        mq2_read(true);
 
         // update mq2 values
         xSemaphoreTake(mq2_value.mutex, 1);
