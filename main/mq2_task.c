@@ -133,12 +133,12 @@ float MQResistanceCalculation(int raw_adc)
 float *read(bool print)
 {
     float lpg_value, co_value, smoke_value;
-    lpg_value = MQRead() / Ro;
-    lpg = MQGetGasPercentage(lpg_value, GAS_LPG);
-    co_value = MQRead() / Ro;
-    co = MQGetGasPercentage(co_value, GAS_CO);
-    smoke_value = MQRead() / Ro;
-    smoke = MQGetGasPercentage(smoke_value, GAS_SMOKE);
+    lpg_value = MQRead();
+    lpg = MQGetGasPercentage(lpg_value / R0, GAS_LPG);
+    co_value = MQRead();
+    co = MQGetGasPercentage(co_value / R0, GAS_CO);
+    smoke_value = MQRead();
+    smoke = MQGetGasPercentage(smoke_value / R0, GAS_SMOKE);
 
     if (lpg > 1000 || co > 1000 || smoke > 1000)
     {
