@@ -167,7 +167,9 @@ float MQRead()
     adc1_config_channel_atten(channel, atten);
 
     int val = adc1_get_raw(channel);
+    ESP_LOGI(DEBUG_TAG, "MQ2 ADC: %d", val);
     uint32_t voltage = esp_adc_cal_raw_to_voltage(val, adc_chars);
+    ESP_LOGI(DEBUG_TAG, "MQ2 Voltage: %d", voltage);
 
     for (i = 0; i < READ_SAMPLE_TIMES; i++)
     {
@@ -300,8 +302,9 @@ void mq2_task_handler(void *arg)
     begin();
     while (1)
     {
-        float *values;
-        values = read(true);
+        // update the lpg, co, smoke values
+        ESP_LOGI(DEBUG_TAG, "update the lpg, co, smoke values");
+        read(true);
 
         // update mq2 values
         xSemaphoreTake(mq2_value.mutex, 1);
@@ -330,6 +333,8 @@ void mq2_task_handler(void *arg)
         // Should notify the alarm signal to user, if the alram is enabled. But
         // the function is not implemented yet.
         xSemaphoreGive(mq2_value.mutex);
+
+        ESP_LOGI(DEBUG_TAG, "LPG: %f, CO: %f, SMOKE: %f\r\n", mq2_value.lpg, mq2_value.co, mq2_value.smoke);
 
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }

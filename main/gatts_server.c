@@ -378,8 +378,10 @@ static void gatts_profile_led_event_handler(esp_gatts_cb_event_t event, esp_gatt
             rsp.attr_value.len = gatts_led_power_status_val.attr_len;
             // syhcronize the value of the attribute with the device info
             led_status = (led_power_status_t)Get_LED_Status();
-            memcpy(rsp.attr_value.value, &led_status, gatts_led_power_status_val.attr_len);
+            ESP_LOGI(DEBUG_TAG, "led_status = %d", led_status);
+            memcpy(gatts_led_power_status_val.attr_value, &led_status, gatts_led_power_status_val.attr_len);
             memcpy(rsp.attr_value.value, gatts_led_power_status_val.attr_value, gatts_led_power_status_val.attr_len);
+            ESP_LOGI(DEBUG_TAG, "rsp.attr_value.len=%d, rsp.attr_value.value=%d\r\n", rsp.attr_value.len, rsp.attr_value.value[0]);
         }
         else if (param->read.handle == gl_profile_tab[PROFILE_LED_APP_ID].char2_handle)
         {
@@ -387,8 +389,10 @@ static void gatts_profile_led_event_handler(esp_gatts_cb_event_t event, esp_gatt
             rsp.attr_value.handle = param->read.handle;
             rsp.attr_value.len = gatts_led_pin_number_val.attr_len;
             led_pin_number = (led_pin_number_t)Get_LED_PIN_Number();
-            memcpy(rsp.attr_value.value, &led_pin_number, gatts_led_pin_number_val.attr_len);
-            memcpy(rsp.attr_value.value, gatts_led_power_status_val.attr_value, gatts_led_pin_number_val.attr_len);
+            ESP_LOGI(DEBUG_TAG, "led_pin_number = %d", led_pin_number);
+            memcpy(gatts_led_pin_number_val.attr_value, &led_pin_number, gatts_led_pin_number_val.attr_len);
+            memcpy(rsp.attr_value.value, gatts_led_pin_number_val.attr_value, gatts_led_pin_number_val.attr_len);
+            ESP_LOGI(DEBUG_TAG, "rsp.attr_value.len=%d, rsp.attr_value.value=%d\r\n", rsp.attr_value.len, rsp.attr_value.value[0]);
         }
         // the following read operation will be filled in later
         // rsp.attr_value.handle = param->read.handle;
@@ -676,7 +680,7 @@ static void gatts_profile_smoke_event_handler(esp_gatts_cb_event_t event, esp_ga
             rsp.attr_value.handle = param->read.handle;
             rsp.attr_value.len = gatts_smoke_smoke_val.attr_len;
             smoke_smoke_value = (smoke_smoke_t)GetSmoke();
-            memcpy(rsp.attr_value.value, &smoke_smoke_value, gatts_smoke_smoke_val.attr_len);
+            memcpy(gatts_smoke_smoke_val.attr_value, &smoke_smoke_value, gatts_smoke_smoke_val.attr_len);
             memcpy(rsp.attr_value.value, gatts_smoke_smoke_val.attr_value, gatts_smoke_smoke_val.attr_len);
         }
         else if (param->read.handle == gl_profile_tab[PROFILE_SMOKE_APP_ID].char2_handle)
@@ -685,7 +689,7 @@ static void gatts_profile_smoke_event_handler(esp_gatts_cb_event_t event, esp_ga
             rsp.attr_value.handle = param->read.handle;
             rsp.attr_value.len = gatts_smoke_alarm_val.attr_len;
             smoke_alarm_value = (smoke_alarm_t)GetAlarm();
-            memcpy(rsp.attr_value.value, &smoke_alarm_value, gatts_smoke_alarm_val.attr_len);
+            memcpy(gatts_smoke_alarm_val.attr_value, &smoke_alarm_value, gatts_smoke_alarm_val.attr_len);
             memcpy(rsp.attr_value.value, gatts_smoke_alarm_val.attr_value, gatts_smoke_alarm_val.attr_len);
         }
         else
@@ -978,7 +982,7 @@ static void gatts_profile_dth11_event_handler(esp_gatts_cb_event_t event, esp_ga
             rsp.attr_value.handle = param->read.handle;
             rsp.attr_value.len = gatts_dth11_temperature_val.attr_len;
             dth11_temperature_value = (dth11_temperature_t)DHT11_ReadTemp();
-            memcpy(rsp.attr_value.value, &dth11_temperature_value, gatts_dth11_temperature_val.attr_len);
+            memcpy(gatts_dth11_temperature_val.attr_value, &dth11_temperature_value, gatts_dth11_temperature_val.attr_len);
             memcpy(rsp.attr_value.value, gatts_dth11_temperature_val.attr_value, gatts_dth11_temperature_val.attr_len);
         }
         else if (param->read.handle == gl_profile_tab[PROFILE_DTH11_APP_ID].char2_handle)
@@ -987,7 +991,7 @@ static void gatts_profile_dth11_event_handler(esp_gatts_cb_event_t event, esp_ga
             rsp.attr_value.handle = param->read.handle;
             rsp.attr_value.len = gatts_dth11_humidity_val.attr_len;
             dth11_humidity_value = (dth11_humidity_t)DHT11_ReadHumi();
-            memcpy(rsp.attr_value.value, &dth11_humidity_value, gatts_dth11_humidity_val.attr_len);
+            memcpy(gatts_dth11_humidity_val.attr_value, &dth11_humidity_value, gatts_dth11_humidity_val.attr_len);
             memcpy(rsp.attr_value.value, gatts_dth11_humidity_val.attr_value, gatts_dth11_humidity_val.attr_len);
         }
         else

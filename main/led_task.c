@@ -20,6 +20,24 @@ void led_task_handler(void *pvParameter)
     // configuration of led
     Configure_LED();
 
+    while (1)
+    {
+        switch (Get_LED_Status())
+        {
+        case POWER_ON:
+            Power_LED_OFF();
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+            break;
+        case POWER_OFF:
+            Power_LED_ON();
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+            break;
+        default:
+            break;
+        }
+    }
+    Power_LED_ON();
+
     vTaskDelete(NULL);
 }
 

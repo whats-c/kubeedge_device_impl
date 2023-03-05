@@ -1,7 +1,7 @@
 {
   "C_Cpp.intelliSenseEngine": "Tag Parser",
   "idf.flashType": "UART",
-  "idf.portWin": "COM7",
+  "idf.portWin": "COM5",
   "idf.adapterTargetName": "esp32",
   "files.associations": {
     "esp_gatt_common_api.h": "c",
@@ -35,6 +35,7 @@
     "mq2_task.h": "c",
     "esp_log.h": "c",
     "gatts_server.h": "c",
-    "esp_system.h": "c"
+    "esp_system.h": "c",
+    "istream": "c"
   }
 }

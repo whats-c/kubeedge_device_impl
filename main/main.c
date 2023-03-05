@@ -44,5 +44,5 @@ void app_main(void)
     // esp_timer_start_periodic(TempHumi_timer, 3000 * 1000);
     // xTaskCreate(DHT11_task_handler, "DHT11", 4096, NULL, 2, &dhtTask);
 
-    xTaskCreate(gatts_server_task_handler, "gatts_server", 4096, NULL, 5, NULL);
+    // xTaskCreate(gatts_server_task_handler, "gatts_server", 4096, NULL, 5, NULL);
 }
