@@ -1,7 +1,7 @@
 {
   "C_Cpp.intelliSenseEngine": "Tag Parser",
   "idf.flashType": "UART",
-  "idf.portWin": "COM5",
+  "idf.portWin": "COM14",
   "idf.adapterTargetName": "esp32",
   "files.associations": {
     "esp_gatt_common_api.h": "c",

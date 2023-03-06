@@ -103,7 +103,7 @@ float MQCalibration()
         /* take multiple samples */
         int caliread = adc1_get_raw(channel);
         val += MQResistanceCalculation(caliread);
-        printf("Sample: %d : Calibration ADC :%d: MQResistanceCalculation: %.4f:\n", i, caliread, val);
+        ESP_LOGI(DEBUG_TAG, "Sample: %d : Calibration ADC :%d: MQResistanceCalculation: %.4f:\n", i, caliread, val);
         vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 
@@ -132,14 +132,9 @@ float MQResistanceCalculation(int raw_adc)
 /****************** read infinite times ****************************************/
 float *mq2_read(bool print)
 {
-    ESP_LOGI(DEBUG_TAG, "program into read function");
-    float lpg_value, co_value, smoke_value;
-    lpg_value = MQRead();
-    lpg = MQGetGasPercentage(lpg_value / Ro, GAS_LPG);
-    co_value = MQRead();
-    co = MQGetGasPercentage(co_value / Ro, GAS_CO);
-    smoke_value = MQRead();
-    smoke = MQGetGasPercentage(smoke_value / Ro, GAS_SMOKE);
+    lpg = MQGetGasPercentage(MQRead() / Ro, GAS_LPG);
+    co = MQGetGasPercentage(MQRead() / Ro, GAS_CO);
+    smoke = MQGetGasPercentage(MQRead() / Ro, GAS_SMOKE);
 
     if (lpg > 1000 || co > 1000 || smoke > 1000)
     {

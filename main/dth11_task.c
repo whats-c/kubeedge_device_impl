@@ -12,6 +12,11 @@ void DelayUs(uint32_t nCount)
 
 void DHT11_Start(void)
 {
+    if (dth11_value.dth11_mux == NULL)
+    {
+        dth11_value.dth11_mux = xSemaphoreCreateMutex();
+    }
+
     DHT11_OUT;          // 设置端口方向
     DHT11_CLR;          // 拉低端口
     DelayUs(19 * 1000); // 持续最低18ms;
@@ -52,18 +57,12 @@ uint8_t DHT11_ReadValue(void)
 uint8_t DHT11_ReadTemHum(uint8_t *buf)
 {
     uint8_t check;
-    ESP_LOGI(DEBUG_TAG, "DHT11_ReadTemHum 1\n\r");
     buf[0] = DHT11_ReadValue();
-    ESP_LOGI(DEBUG_TAG, "DHT11_ReadTemHum 2\n\r");
     buf[1] = DHT11_ReadValue();
-    ESP_LOGI(DEBUG_TAG, "DHT11_ReadTemHum 3\n\r");
     buf[2] = DHT11_ReadValue();
-    ESP_LOGI(DEBUG_TAG, "DHT11_ReadTemHum 4\n\r");
     buf[3] = DHT11_ReadValue();
-    ESP_LOGI(DEBUG_TAG, "DHT11_ReadTemHum 5\n\r");
 
     check = DHT11_ReadValue();
-    ESP_LOGI(DEBUG_TAG, "DHT11_ReadTemHum 6\n\r");
 
     if (check == buf[0] + buf[1] + buf[2] + buf[3])
         return 1;
@@ -97,15 +96,12 @@ void DHT11_task_handler(void *pvParam)
     gpio_pad_select_gpio(DHT11_PIN);
     while (1)
     {
-        ESP_LOGI(DEBUG_TAG, "while(1) start location\n\r");
 
         //--------此行可插入挂起其他任务代码,以免这个任务收到干扰-------//
 
         DHT11_Start();
-        ESP_LOGI(DEBUG_TAG, "DHT11_Started\n\r");
         if (DHT11_ReadTemHum(DHT11Data))
         {
-            ESP_LOGI(DEBUG_TAG, "DHT11_ReadTemHum\n\r");
             xSemaphoreTake(dth11_value.dth11_mux, 1);
             dth11_value.temp_value = DHT11Data[2];
             dth11_value.humi_value = DHT11Data[0];
@@ -118,9 +114,7 @@ void DHT11_task_handler(void *pvParam)
         }
 
         //--------------然后可在此行插入恢复其他任务代码----------------//
-        ESP_LOGI(DEBUG_TAG, "suspend before\n\r");
         vTaskSuspend(NULL); // 这里是把自己挂起，挂起后该任务被暂停，不恢复是不运行的
-        ESP_LOGI(DEBUG_TAG, "while(1) end location\n\r");
     }
 }
 

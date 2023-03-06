@@ -26,15 +26,15 @@ void app_main(void)
 {
 
     // create led task and start it
-    ESP_LOGI(LED_TAG, "Starting LED Task\n\r");
-    xTaskCreate(led_task_handler, "led_task_handler", 2048, NULL, 5, &led_task_handle);
+    // ESP_LOGI(LED_TAG, "Starting LED Task\n\r");
+    // xTaskCreate(led_task_handler, "led_task_handler", 2048, NULL, 5, &led_task_handle);
 
     // creat mq2 task and start it
     ESP_LOGI(MQ2_TAG, "Starting MQ2 Task\n\r");
     xTaskCreate(mq2_task_handler, "mq2_task_entry", 4096, NULL, 5, &mq2_handler);
 
-    // // create dth11 task and start it
-    // // all the operation of below you can read the comments in dth11_task.c
+    // create dth11 task and start it
+    // all the operation of below you can read the comments in dth11_task.c
     // esp_timer_create_args_t start_dht = {
     //     .callback = &timer_periodic,
     //     .arg = NULL,
