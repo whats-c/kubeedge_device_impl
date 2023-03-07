@@ -25,17 +25,6 @@
  * -----------------------------------------------------------
  */
 
-/* GPIO 36 For channel 0 --> gas sensor analog pin */
-static const adc_channel_t channel = ADC1_CHANNEL_0;
-
-/* ADC capture width is 10 (Range 0-1023) */
-static const adc_bits_width_t width = ADC_WIDTH_BIT_10;
-
-/* No input attenumation, ADC can measure up to approx. 800 mV. */
-static const adc_atten_t atten = ADC_ATTEN_DB_0;
-
-static esp_adc_cal_characteristics_t adc_chars;
-
 /*****************************Globals***********************************************/
 float LPGCurve[3] = {2.3, 0.21, -0.47};   // two points are taken from the curve.
                                           // with these two points, a line is formed which is "approximately equivalent"
@@ -49,22 +38,24 @@ float SmokeCurve[3] = {2.3, 0.53, -0.44}; // two points are taken from the curve
                                           // with these two points, a line is formed which is "approximately equivalent"
                                           // to the original curve.
                                           // data format:{ x, y, slope}; point1: (lg200, 0.53), point2: (lg10000,  -0.22)
-float Ro = 10;                            // Ro is initialized to 10 kilo ohms
+
+float Ro = 10; // Ro is initialized to 10 kilo ohms
 float lpg = 0;
 float co = 0;
 float smoke = 0;
+float alarm = 0;
 int lastReadTime = 0;
 
-typedef struct
-{
-    float lpg;
-    float co;
-    float smoke;
-    int alarm;
-    char *alarm_type;
+/* GPIO 36 For channel 0 --> gas sensor analog pin */
+static const adc_channel_t channel = ADC1_CHANNEL_0;
 
-    SemaphoreHandle_t mutex;
-} mq2_value_t;
+/* ADC capture width is 10 (Range 0-1023) */
+static const adc_bits_width_t width = ADC_WIDTH_BIT_10;
+
+/* No input attenumation, ADC can measure up to approx. 800 mV. */
+static const adc_atten_t atten = ADC_ATTEN_DB_0;
+
+static esp_adc_cal_characteristics_t adc_chars;
 
 static mq2_value_t mq2_value;
 
@@ -103,7 +94,6 @@ float MQCalibration()
         /* take multiple samples */
         int caliread = adc1_get_raw(channel);
         val += MQResistanceCalculation(caliread);
-        ESP_LOGI(DEBUG_TAG, "Sample: %d : Calibration ADC :%d: MQResistanceCalculation: %.4f:\n", i, caliread, val);
         vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 
@@ -130,7 +120,7 @@ float MQResistanceCalculation(int raw_adc)
 }
 
 /****************** read infinite times ****************************************/
-float *mq2_read(bool print)
+float *MQ2Update()
 {
     lpg = MQGetGasPercentage(MQRead() / Ro, GAS_LPG);
     co = MQGetGasPercentage(MQRead() / Ro, GAS_CO);
@@ -138,12 +128,15 @@ float *mq2_read(bool print)
 
     if (lpg > 1000 || co > 1000 || smoke > 1000)
     {
+        alarm = 1;
         printf("[ GAS DETECTTED ]\n");
         printf("LPG::%.2f::ppm CO::%.2f::ppm SMOKE::%.2f::ppm \n", lpg, co, smoke);
     }
     else
     {
+        alarm = 0;
         printf("XXX [ GAS NOT DETECTED ] XXX\n");
+        printf("LPG::%.2f::ppm CO::%.2f::ppm SMOKE::%.2f::ppm \n", lpg, co, smoke);
     }
     lastReadTime = xthal_get_ccount();
 
@@ -166,9 +159,7 @@ float MQRead()
     adc1_config_channel_atten(channel, atten);
 
     int val = adc1_get_raw(channel);
-    ESP_LOGI(DEBUG_TAG, "MQ2 ADC: %d", val);
-    uint32_t voltage = esp_adc_cal_raw_to_voltage(val, &adc_chars);
-    ESP_LOGI(DEBUG_TAG, "MQ2 Voltage: %d", voltage);
+    // uint32_t voltage = esp_adc_cal_raw_to_voltage(val, &adc_chars);
 
     for (i = 0; i < READ_SAMPLE_TIMES; i++)
     {
@@ -297,38 +288,18 @@ int GetAlarm()
 
 void mq2_task_handler(void *arg)
 {
-    ESP_LOGI(MQ2_TAG, "MQ2 Task Started");
     begin();
     while (1)
     {
         // update the lpg, co, smoke values
-        ESP_LOGI(DEBUG_TAG, "update the lpg, co, smoke values");
-        mq2_read(true);
+        MQ2Update();
 
         // update mq2 values
         xSemaphoreTake(mq2_value.mutex, 1);
         mq2_value.lpg = lpg;
         mq2_value.co = co;
         mq2_value.smoke = smoke;
-        if (mq2_value.lpg > 100)
-        {
-            mq2_value.alarm = 1;
-            mq2_value.alarm_type = "lpg";
-        }
-        else if (mq2_value.co > 100)
-        {
-            mq2_value.alarm = 1;
-            mq2_value.alarm_type = "co";
-        }
-        else if (mq2_value.smoke > 100)
-        {
-            mq2_value.alarm = 1;
-            mq2_value.alarm_type = "smoke";
-        }
-        else
-        {
-            mq2_value.alarm = 0;
-        }
+        mq2_value.alarm = alarm;
         // Should notify the alarm signal to user, if the alram is enabled. But
         // the function is not implemented yet.
         xSemaphoreGive(mq2_value.mutex);

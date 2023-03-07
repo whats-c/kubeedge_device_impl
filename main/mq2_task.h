@@ -25,8 +25,19 @@
 #define GAS_CO 1
 #define GAS_SMOKE 2
 
+typedef struct
+{
+    float lpg;
+    float co;
+    float smoke;
+    int alarm;
+    char *alarm_type;
+
+    SemaphoreHandle_t mutex;
+} mq2_value_t;
+
 /**********************************************function-define-----------------------------*/
-float *mq2_read(bool print);
+float *MQ2Update();
 
 float readLPG();
 float readCO();
