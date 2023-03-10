@@ -24,24 +24,24 @@ void timer_periodic(void *arg)
 
 void app_main(void)
 {
-    // // create led task and start it
-    // ESP_LOGI(LED_TAG, "Starting LED Task\n\r");
-    // xTaskCreate(led_task_handler, "led_task_handler", 2048, NULL, 5, &led_task_handle);
+    // create led task and start it
+    ESP_LOGI(LED_TAG, "Starting LED Task\n\r");
+    xTaskCreate(led_task_handler, "led_task_handler", 2048, NULL, 5, &led_task_handle);
 
     // creat mq2 task and start it
     ESP_LOGI(MQ2_TAG, "Starting MQ2 Task\n\r");
     xTaskCreate(mq2_task_handler, "mq2_task_entry", 4096, NULL, 5, &mq2_handler);
 
     // create dth11 task and start it
-    //     all the operation of below you can read the comments in dth11_task.c
-    //         esp_timer_create_args_t start_dht = {
-    //     .callback = &timer_periodic,
-    //     .arg = NULL,
-    //     .name = "PeriodicTimer"};
-    // esp_timer_init();
-    // esp_timer_create(&start_dht, &TempHumi_timer);
-    // esp_timer_start_periodic(TempHumi_timer, 3000 * 1000);
-    // xTaskCreate(DHT11_task_handler, "DHT11", 4096, NULL, 2, &dhtTask);
+        // all the operation of below you can read the comments in dth11_task.c
+            esp_timer_create_args_t start_dht = {
+        .callback = &timer_periodic,
+        .arg = NULL,
+        .name = "PeriodicTimer"};
+    esp_timer_init();
+    esp_timer_create(&start_dht, &TempHumi_timer);
+    esp_timer_start_periodic(TempHumi_timer, 3000 * 1000);
+    xTaskCreate(DHT11_task_handler, "DHT11", 4096, NULL, 2, &dhtTask);
 
-    // xTaskCreate(gatts_server_task_handler, "gatts_server", 4096, NULL, 5, NULL);
+    xTaskCreate(gatts_server_task_handler, "gatts_server", 4096, NULL, 5, NULL);
 }
