@@ -41,6 +41,7 @@ void led_task_handler(void *pvParameter)
     vTaskDelete(NULL);
 }
 
+// configure led 
 void Configure_LED(void)
 {
     ESP_LOGI(LED_TAG, "Configuring LED\n\r");
@@ -48,6 +49,7 @@ void Configure_LED(void)
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
 }
 
+// get led status
 int Get_LED_Status(void)
 {
     int status;
@@ -57,6 +59,7 @@ int Get_LED_Status(void)
     return status;
 }
 
+// set led status
 int Power_LED_ON(void)
 {
     ESP_LOGI(LED_TAG, "Turning LED ON\n\r");
@@ -67,6 +70,7 @@ int Power_LED_ON(void)
     return 0;
 }
 
+// reset the led status
 int Power_LED_OFF(void)
 {
     ESP_LOGI(LED_TAG, "Turning LED OFF\n\r");
@@ -77,6 +81,7 @@ int Power_LED_OFF(void)
     return 0;
 }
 
+// get the led information. now the information only have the led pin number
 led_info_t Get_LED_Info(void)
 {
     led_info_t led_info;
@@ -84,6 +89,7 @@ led_info_t Get_LED_Info(void)
     return led_info;
 }
 
+// get the led pin number
 int Get_LED_PIN_Number(void)
 {
     return LED_PIN;

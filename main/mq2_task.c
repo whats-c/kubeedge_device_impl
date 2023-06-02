@@ -249,6 +249,7 @@ float readSmoke()
     }
 }
 
+// get the lpg value is used by gatts server to send the value to the client
 float GetLPG()
 {
     float lgp;
@@ -258,6 +259,7 @@ float GetLPG()
     return lpg;
 }
 
+// get the lpg value is used by gatts server to send the value to the client
 float GetCO()
 {
     float co;
@@ -267,6 +269,7 @@ float GetCO()
     return co;
 }
 
+// get the lpg value is used by gatts server to send the value to the client
 float GetSmoke()
 {
     float smoke;

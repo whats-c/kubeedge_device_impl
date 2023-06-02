@@ -10,6 +10,7 @@ void DelayUs(uint32_t nCount)
     ets_delay_us(nCount);
 }
 
+// configure the dth11 and start it
 void DHT11_Start(void)
 {
     if (dth11_value.dth11_mux == NULL)
@@ -70,6 +71,7 @@ uint8_t DHT11_ReadTemHum(uint8_t *buf)
         return 0;
 }
 
+// read the temperature value
 uint8_t DHT11_ReadTemp(void)
 {
     uint8_t temp;
@@ -79,6 +81,7 @@ uint8_t DHT11_ReadTemp(void)
     return temp;
 }
 
+// read the humidity value
 uint8_t DHT11_ReadHumi(void)
 {
     uint8_t humi;
@@ -88,6 +91,8 @@ uint8_t DHT11_ReadHumi(void)
     return humi;
 }
 
+// if the dth11 task design is not understand, you can look the blog
+// https://blog.csdn.net/u011594289/article/details/122182736
 //-------DHT11任务---------//
 void DHT11_task_handler(void *pvParam)
 {
