@@ -23,6 +23,7 @@
 #include "led_task.h"
 #include "mq2_task.h"
 #include "dth11_task.h"
+#include "bh1750.h"
 
 #define GATTS_TAG "BLE_LED_SMOKE_DTH11"
 
@@ -48,14 +49,21 @@
 #define GATTS_DESCR_HUMIDITY_UUID_DTH11 0xFD20
 #define GATTS_NUM_HANDLE_DTH11 6
 
+#define GATTS_SERVICE_UUID_BH1750 0x00FC
+#define GATTS_CHAR_LUX_UUID_BH1750 0xFD01
+#define GATTS_DESCR_LUX_UUID_BH1750 0xFD10
+#define GATTS_NUM_HANDLE_BH1750 6
+
 // Define LED, SMOKE, DTH11 device name
 #define LED_DEVICE_NAME "ESP_LED_SOMKE_DTH11"
 #define SMOKE_DEVICE_NAME "ESP_LED_SOMKE_DTH11"
 #define DTH11_DEVICE_NAME "ESP_LED_SOMKE_DTH11"
+#define BH1750_DEVICE_NAME "ESP_LED_SOMKE_DTH11"
 
 #define LED_MANUFACTURER_DATA_LEN 17
 #define SOMKE_MANUFACTURER_DATA_LEN 17
 #define DTH11_MANUFACTURER_DATA_LEN 17
+#define BH1750_MANUFACTURER_DATA_LEN 17
 
 #define GATTS_CHAR_VAL_LEN_MAX 40
 #define PREPARE_BUF_MAX_SIZE 1024
@@ -63,10 +71,11 @@
 #define adv_config_flag (1 << 0)
 #define scan_rsp_config_flag (1 << 1)
 
-#define PROFILE_NUM 3
+#define PROFILE_NUM 4
 #define PROFILE_LED_APP_ID 0
 #define PROFILE_SMOKE_APP_ID 1
 #define PROFILE_DTH11_APP_ID 2
+#define PROFILE_BH1750_APP_ID 3
 
 // Define general profile structure for LED, SMOKE, DTH11
 struct gatts_profile_inst
@@ -103,6 +112,7 @@ typedef uint8_t dth11_temperature_t;
 typedef uint8_t dth11_humidity_t;
 typedef float smoke_smoke_t;
 typedef uint8_t smoke_alarm_t;
+typedef float bh1750_lux_t;
 
 void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param);
 void gatts_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
