@@ -1,7 +1,7 @@
 #include "led_task.h"
 #include "mq2_task.h"
 #include "dth11_task.h"
-// #include "gatts_server.h"
+#include "gatts_server.h"
 #include "esp_system.h"
 #include "bh1750.h"
 #include "gatts_server_node.h"
@@ -9,8 +9,8 @@
 #define MAIN_TAG "MAIN"
 
 static TaskHandle_t led_task_handle = NULL;
-// static TaskHandle_t mq2_handler = NULL;
-// static TaskHandle_t bh1750_handler = NULL;
+static TaskHandle_t mq2_handler = NULL;
+static TaskHandle_t bh1750_handler = NULL;
 
 //-------------任务句柄----------------//
 TaskHandle_t dhtTask;
@@ -29,9 +29,9 @@ void app_main(void)
     ESP_LOGI(LED_TAG, "Starting LED Task\n\r");
     xTaskCreate(led_task_handler, "led_task_handler", 2048, NULL, 1, &led_task_handle);
 
-    // // creat mq2 task and start it
-    // ESP_LOGI(MQ2_TAG, "Starting MQ2 Task\n\r");
-    // xTaskCreate(mq2_task_handler, "mq2_task_entry", 4096, NULL, 1, &mq2_handler);
+    // creat mq2 task and start it
+    ESP_LOGI(MQ2_TAG, "Starting MQ2 Task\n\r");
+    xTaskCreate(mq2_task_handler, "mq2_task_entry", 4096, NULL, 1, &mq2_handler);
 
     // create dth11 task and start it
     // all the operation of below you can read the comments in dth11_task.c
@@ -47,5 +47,5 @@ void app_main(void)
     // xTaskCreate(i2c_test_task, "bh1750", 4096, NULL, 1, &bh1750_handler);
 
     // create gatts server task and start it
-    xTaskCreate(gatts_server_node_task_handler, "gatts_server", 4096, NULL, 2, NULL);
+    //xTaskCreate(gatts_server_task_handler, "gatts_server", 4096, NULL, 2, NULL);
 }
